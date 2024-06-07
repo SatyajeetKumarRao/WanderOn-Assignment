@@ -144,7 +144,7 @@ const Signup = () => {
                 !
               </Text>
             </Heading>
-            <Text color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
+            <Text mt={3} color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
               Your dream are one sign-up away
             </Text>
           </Stack>

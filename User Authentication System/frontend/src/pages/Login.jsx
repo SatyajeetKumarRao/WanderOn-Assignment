@@ -145,11 +145,11 @@ const Login = () => {
                 !
               </Text>
             </Heading>
-            <Text color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
+            <Text mt={3} color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
               Exploring destinations, creating memories
             </Text>
           </Stack>
-          <Box as={"form"} mt={10}>
+          <Box as={"form"} mt={5}>
             <Stack spacing={4}>
               <Input
                 placeholder="name@email.com"
