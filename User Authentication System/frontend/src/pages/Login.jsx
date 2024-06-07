@@ -90,6 +90,7 @@ const Login = () => {
         navigate("/");
       })
       .catch((error) => {
+        console.log(error);
         // console.log(error.response.data);
         setFormStateData({ ...formStateData, isLoading: false, isError: true });
         toast({
