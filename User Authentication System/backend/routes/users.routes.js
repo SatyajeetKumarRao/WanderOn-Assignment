@@ -126,17 +126,14 @@ usersRouter.post("/register", validateRegister, async (req, res) => {
 
 usersRouter.post("/logout", async (req, res) => {
   try {
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.split(" ")[0] == "Bearer"
-    ) {
-      const accessToken = req.headers.authorization.split(" ")[1];
+    if (req.cookies.accessToken) {
+      const accessToken = req.cookies.accessToken;
 
       const blacklistToken = new BlacklistToken({ token: accessToken });
 
       await blacklistToken.save();
 
-      return res.status(200).json({
+      return res.status(200).clearCookie("accessToken").json({
         message: "User logged out successfully",
       });
     } else {
