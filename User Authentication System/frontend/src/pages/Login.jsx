@@ -11,8 +11,13 @@ import {
   Stack,
   Text,
   useBreakpointValue,
+  useToast,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import axios from "axios";
+import { BASE_URL } from "../utils/vars";
 
 const avatars = [
   {
@@ -37,7 +42,67 @@ const avatars = [
   },
 ];
 
+const initialFormData = {
+  isLoading: false,
+  isError: false,
+  isSuccess: false,
+};
+
 const Login = () => {
+  const [formStateData, setFormStateData] = useState(initialFormData);
+
+  const toast = useToast();
+
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleSignin = (data) => {
+    // console.log(data);
+
+    setFormStateData({ ...formStateData, isLoading: true, isError: false });
+
+    axios
+      .post(`${BASE_URL}/users/login`, data)
+      .then((response) => {
+        // console.log(response.data);
+
+        setFormStateData({
+          ...formStateData,
+          isLoading: false,
+          isError: false,
+          isSuccess: true,
+        });
+
+        toast({
+          title: "Login Successful",
+          //   description: "We've created your account for you.",
+          status: "success",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+
+        navigate("/");
+      })
+      .catch((error) => {
+        // console.log(error.response.data);
+        setFormStateData({ ...formStateData, isLoading: false, isError: true });
+        toast({
+          title: error.response.data?.message,
+          // description: "We've created your account for you.",
+          status: "error",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  };
+
   return (
     <Box position={"relative"}>
       <Container
@@ -118,7 +183,10 @@ const Login = () => {
           </Stack>
           <Flex>
             <Text>
-              Don't have an account? <Link to={"/signup"}>Signup</Link>
+              Don't have an account?{" "}
+              <Link to={"/signup"} style={{ color: "red" }}>
+                Signup
+              </Link>
             </Text>
           </Flex>
         </Stack>
@@ -149,29 +217,84 @@ const Login = () => {
               Exploring destinations, creating memories
             </Text>
           </Stack>
-          <Box as={"form"} mt={5}>
+          <Box as={"form"} mt={5} onSubmit={handleSubmit(handleSignin)}>
             <Stack spacing={4}>
               <Input
                 placeholder="name@email.com"
+                type="email"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                {...register("email", {
+                  required: true,
+                  pattern: {
+                    value:
+                      /^[\w]+(([.]{1}[\w]+)?)*@[\w]+[.]{1}[a-z]+([.]{1}[a-z]+)?$/i,
+                    message: "invalid email address",
+                  },
+                })}
+                aria-invalid={errors.email ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+              {errors.email?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Email is required
+                </Text>
+              )}
+
+              {errors.email && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  {errors.email.message}
+                </Text>
+              )}
               <Input
                 placeholder="password"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                type="password"
+                {...register("password", {
+                  required: true,
+                })}
+                aria-invalid={errors.password ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+              {errors.password?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Password is required
+                </Text>
+              )}
             </Stack>
             <Button
+              type="submit"
               fontFamily={"heading"}
+              isLoading={formStateData.isLoading}
+              loadingText="Signing In"
               mt={8}
               w={"full"}
               bgGradient="linear(to-r, red.400,pink.400)"

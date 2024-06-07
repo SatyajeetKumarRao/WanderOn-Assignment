@@ -110,7 +110,7 @@ const Home = () => {
           />
           <Box
             position={"relative"}
-            height={"300px"}
+            height={"fit-content"}
             rounded={"2xl"}
             boxShadow={"2xl"}
             width={"full"}

@@ -12,7 +12,12 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { BASE_URL } from "../utils/vars";
+import { useToast } from "@chakra-ui/react";
+import { useState } from "react";
 
 const avatars = [
   {
@@ -37,7 +42,73 @@ const avatars = [
   },
 ];
 
+const initialFormData = {
+  isLoading: false,
+  isError: false,
+  isSuccess: false,
+};
+
 const Signup = () => {
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const [formStateData, setFormStateData] = useState(initialFormData);
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm();
+
+  const handleSignup = (data) => {
+    const { username, email, password } = data;
+
+    setFormStateData({ ...formStateData, isLoading: true, isError: false });
+
+    const userDetails = {
+      username,
+      email,
+      password,
+    };
+
+    axios
+      .post(`${BASE_URL}/users/register`, userDetails)
+      .then((response) => {
+        // console.log(response.data);
+
+        setFormStateData({
+          ...formStateData,
+          isLoading: false,
+          isError: false,
+          isSuccess: true,
+        });
+
+        toast({
+          title: "SignUp Successful",
+          description: "We've created your account for you.",
+          status: "success",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+
+        navigate("/login");
+      })
+      .catch((error) => {
+        // console.log(error.response.data);
+        setFormStateData({ ...formStateData, isLoading: false, isError: true });
+        toast({
+          title: error.response.data?.message,
+          // description: "We've created your account for you.",
+          status: "error",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  };
+
   return (
     <Box position={"relative"}>
       <Container
@@ -118,7 +189,10 @@ const Signup = () => {
           </Stack>
           <Flex>
             <Text>
-              Already have an account? <Link to={"/login"}>Login</Link>
+              Already have an account?{" "}
+              <Link to={"/login"} style={{ color: "red" }}>
+                Login
+              </Link>
             </Text>
           </Flex>
         </Stack>
@@ -148,47 +222,190 @@ const Signup = () => {
               Your dream are one sign-up away
             </Text>
           </Stack>
-          <Box as={"form"} mt={5}>
+          <Box as={"form"} mt={5} onSubmit={handleSubmit(handleSignup)}>
             <Stack spacing={4}>
               <Input
                 placeholder="name"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                {...register("username", {
+                  required: true,
+                  pattern: {
+                    value: /^[A-Za-z\s]+$/i,
+                    message: "Invalid name format",
+                  },
+                })}
+                aria-invalid={errors.username ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+              {errors.username?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Name is required
+                </Text>
+              )}
+
+              {errors.username && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  {errors.username.message}
+                </Text>
+              )}
               <Input
                 placeholder="name@email.com"
+                type="email"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                {...register("email", {
+                  required: true,
+                  pattern: {
+                    value:
+                      /^[\w]+(([.]{1}[\w]+)?)*@[\w]+[.]{1}[a-z]+([.]{1}[a-z]+)?$/i,
+                    message: "invalid email address",
+                  },
+                })}
+                aria-invalid={errors.email ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+
+              {errors.email?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Email is required
+                </Text>
+              )}
+
+              {errors.email && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  {errors.email.message}
+                </Text>
+              )}
+
               <Input
                 placeholder="password"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                type="password"
+                {...register("password", {
+                  required: true,
+                  pattern: {
+                    value: /^[\w\W\s]{8,15}$/i,
+                    message: "invalid password length",
+                  },
+                })}
+                aria-invalid={errors.password ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+
+              {errors.password?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Password is required
+                </Text>
+              )}
+
+              {errors.password && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  {errors.password.message}
+                </Text>
+              )}
+
               <Input
                 placeholder="confirm password"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
+                type="password"
+                {...register("confirmPassword", {
+                  required: true,
+                  validate: (value) => {
+                    const { password } = getValues();
+                    return password === value || "Passwords should match!";
+                  },
+                })}
+                aria-invalid={errors.confirmPassword ? "true" : "false"}
                 _placeholder={{
                   color: "gray.500",
                 }}
               />
+              {errors.confirmPassword?.type === "required" && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  Confirm password is required
+                </Text>
+              )}
+              {errors.confirmPassword && (
+                <Text
+                  as={"span"}
+                  role="alert"
+                  color={"red.300"}
+                  fontSize={"sm"}
+                  ml={1}
+                  mt={"-10px"}
+                >
+                  {errors.confirmPassword.message}
+                </Text>
+              )}
             </Stack>
+
             <Button
+              type="submit"
               fontFamily={"heading"}
+              isLoading={formStateData.isLoading}
+              loadingText="Signing Up"
               mt={8}
               w={"full"}
               bgGradient="linear(to-r, red.400,pink.400)"
@@ -198,7 +415,7 @@ const Signup = () => {
                 boxShadow: "xl",
               }}
             >
-              Signin
+              Signup
             </Button>
           </Box>
           form
