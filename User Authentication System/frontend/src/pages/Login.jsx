@@ -12,27 +12,28 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const avatars = [
   {
-    name: "Ryan Florence",
-    url: "https://bit.ly/ryan-florence",
+    name: "Kerala",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/kerala",
   },
   {
-    name: "Segun Adebayo",
-    url: "https://bit.ly/sage-adebayo",
+    name: "Himachal",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/himachal",
   },
   {
-    name: "Kent Dodds",
-    url: "https://bit.ly/kent-c-dodds",
+    name: "Sikkim",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/sikkim",
   },
   {
-    name: "Prosper Otemuyiwa",
-    url: "https://bit.ly/prosper-baba",
+    name: "Uttarakhand",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/uttarakhand",
   },
   {
-    name: "Christian Nwamba",
-    url: "https://bit.ly/code-beast",
+    name: "Spiti",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/spiti",
   },
 ];
 
@@ -51,15 +52,14 @@ const Login = () => {
             lineHeight={1.1}
             fontSize={{ base: "3xl", sm: "4xl", md: "5xl", lg: "6xl" }}
           >
-            Senior web designers{" "}
+            Your dream getaway starts here{" "}
             <Text
               as={"span"}
               bgGradient="linear(to-r, red.400,pink.400)"
               bgClip="text"
             >
-              &
+              Escape. Explore. Experience
             </Text>{" "}
-            Full-Stack Developers
           </Heading>
           <Stack direction={"row"} spacing={4} align={"center"}>
             <AvatarGroup>
@@ -116,12 +116,18 @@ const Login = () => {
               YOU
             </Flex>
           </Stack>
+          <Flex>
+            <Text>
+              Don't have an account? <Link to={"/signup"}>Signup</Link>
+            </Text>
+          </Flex>
         </Stack>
         <Stack
           bg={"gray.50"}
           rounded={"xl"}
           p={{ base: 4, sm: 6, md: 8 }}
           spacing={{ base: 8 }}
+          height={"fit-content"}
           maxW={{ lg: "lg" }}
         >
           <Stack spacing={4}>
@@ -130,7 +136,7 @@ const Login = () => {
               lineHeight={1.1}
               fontSize={{ base: "2xl", sm: "3xl", md: "4xl" }}
             >
-              Join our team
+              Sign in to start planning your dream adventure
               <Text
                 as={"span"}
                 bgGradient="linear(to-r, red.400,pink.400)"
@@ -140,21 +146,11 @@ const Login = () => {
               </Text>
             </Heading>
             <Text color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
-              We’re looking for amazing engineers just like you! Become a part
-              of our rockstar engineering team and skyrocket your career!
+              Exploring destinations, creating memories
             </Text>
           </Stack>
           <Box as={"form"} mt={10}>
             <Stack spacing={4}>
-              <Input
-                placeholder="name"
-                bg={"gray.100"}
-                border={0}
-                color={"gray.500"}
-                _placeholder={{
-                  color: "gray.500",
-                }}
-              />
               <Input
                 placeholder="name@email.com"
                 bg={"gray.100"}

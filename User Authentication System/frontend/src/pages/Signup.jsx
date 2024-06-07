@@ -12,27 +12,28 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const avatars = [
   {
-    name: "Ryan Florence",
-    url: "https://bit.ly/ryan-florence",
+    name: "Kerala",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/kerala",
   },
   {
-    name: "Segun Adebayo",
-    url: "https://bit.ly/sage-adebayo",
+    name: "Himachal",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/himachal",
   },
   {
-    name: "Kent Dodds",
-    url: "https://bit.ly/kent-c-dodds",
+    name: "Sikkim",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/sikkim",
   },
   {
-    name: "Prosper Otemuyiwa",
-    url: "https://bit.ly/prosper-baba",
+    name: "Uttarakhand",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/uttarakhand",
   },
   {
-    name: "Christian Nwamba",
-    url: "https://bit.ly/code-beast",
+    name: "Spiti",
+    url: "https://images.wanderon.in/new-homepage-data/Explore%20India/spiti",
   },
 ];
 
@@ -115,6 +116,11 @@ const Signup = () => {
               YOU
             </Flex>
           </Stack>
+          <Flex>
+            <Text>
+              Already have an account? <Link to={"/login"}>Login</Link>
+            </Text>
+          </Flex>
         </Stack>
         <Stack
           bg={"gray.50"}
@@ -129,7 +135,7 @@ const Signup = () => {
               lineHeight={1.1}
               fontSize={{ base: "2xl", sm: "3xl", md: "4xl" }}
             >
-              Join our team
+              Sign up for unforgettable travel memories
               <Text
                 as={"span"}
                 bgGradient="linear(to-r, red.400,pink.400)"
@@ -139,11 +145,10 @@ const Signup = () => {
               </Text>
             </Heading>
             <Text color={"gray.500"} fontSize={{ base: "sm", sm: "md" }}>
-              We’re looking for amazing engineers just like you! Become a part
-              of our rockstar engineering team and skyrocket your career!
+              Your dream are one sign-up away
             </Text>
           </Stack>
-          <Box as={"form"} mt={10}>
+          <Box as={"form"} mt={5}>
             <Stack spacing={4}>
               <Input
                 placeholder="name"
@@ -165,6 +170,15 @@ const Signup = () => {
               />
               <Input
                 placeholder="password"
+                bg={"gray.100"}
+                border={0}
+                color={"gray.500"}
+                _placeholder={{
+                  color: "gray.500",
+                }}
+              />
+              <Input
+                placeholder="confirm password"
                 bg={"gray.100"}
                 border={0}
                 color={"gray.500"}
