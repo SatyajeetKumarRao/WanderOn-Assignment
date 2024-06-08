@@ -21,7 +21,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  console.log("Cookies: ", JSON.stringify(req.cookies));
   res.json({ message: "Server Home Page" });
 });
 
