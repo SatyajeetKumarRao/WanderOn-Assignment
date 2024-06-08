@@ -62,11 +62,11 @@ usersRouter.post("/login", validateLogin, async (req, res) => {
           .status(200)
           .cookie("accessToken", accessToken, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
           })
           .json({
-            // accessToken,
+            accessToken,
             data: {
               userid: user._id,
             },

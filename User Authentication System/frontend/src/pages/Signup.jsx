@@ -323,7 +323,7 @@ const Signup = () => {
                   required: true,
                   pattern: {
                     value: /^[\w\W\s]{8,15}$/i,
-                    message: "invalid password length",
+                    message: "password length should be 8-15 character",
                   },
                 })}
                 aria-invalid={errors.password ? "true" : "false"}
