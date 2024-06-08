@@ -12,6 +12,7 @@ import {
 import { useEffect, useRef } from "react";
 
 import Typed from "typed.js";
+import { BASE_URL } from "../utils/vars";
 
 const Home = () => {
   const el = useRef(null);
@@ -87,6 +88,12 @@ const Home = () => {
               colorScheme={"red"}
               bg={"red.400"}
               _hover={{ bg: "red.500" }}
+              onClick={() => {
+                fetch(`${BASE_URL}/`)
+                  .then((response) => response.json())
+                  .then((data) => console.log(data))
+                  .catch((err) => console.log(err));
+              }}
             >
               Explore
             </Button>

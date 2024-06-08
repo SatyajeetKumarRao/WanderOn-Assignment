@@ -9,12 +9,20 @@ const app = express();
 
 const PORT = process.env.PORT || 8080;
 
+app.use(
+  cors({
+    origin: `${process.env.FRONTEND_URL}`,
+    methods: "*",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-app.use(cors());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.send("Server Home Page");
+  console.log("Cookies: ", JSON.stringify(req.cookies));
+  res.json({ message: "Server Home Page" });
 });
 
 app.use("/users", usersRouter);

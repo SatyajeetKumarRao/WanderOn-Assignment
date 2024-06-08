@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { Users } = require("../models/users.model");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
@@ -15,10 +15,6 @@ const { Session } = require("../models/session.model");
 const usersRouter = express.Router();
 
 const saltRounds = 10;
-
-usersRouter.get("/", (req, res) => {
-  res.send("users home");
-});
 
 usersRouter.post("/login", validateLogin, async (req, res) => {
   try {
@@ -47,31 +43,36 @@ usersRouter.post("/login", validateLogin, async (req, res) => {
 
         // await session.save();
 
-        const accessToken = jwt.sign(
+        jwt.sign(
           {
             userId: user._id,
             // sessionId,
           },
           process.env.ACCESS_TOKEN_SECRET,
-          {
-            expiresIn: "1d",
+          { expiresIn: "1d" },
+          (err, accessToken) => {
+            if (err) {
+              throw new Error(err);
+            }
+
+            return res
+              .status(200)
+              .cookie("accessToken", accessToken, {
+                httpOnly: true,
+                expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+              })
+              .json({
+                accessToken,
+                data: {
+                  userid: user._id,
+                  email: user.email,
+                },
+                message: "User logged in successfully",
+              });
           }
         );
-
-        return res
-          .status(200)
-          .cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: true,
-            expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-          })
-          .json({
-            accessToken,
-            data: {
-              userid: user._id,
-            },
-            message: "User logged in successfully",
-          });
       } else {
         return res.status(400).json({
           error: true,

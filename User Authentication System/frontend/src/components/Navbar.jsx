@@ -5,6 +5,7 @@ import {
   HamburgerIcon,
 } from "@chakra-ui/icons";
 import {
+  Avatar,
   Box,
   Button,
   Collapse,
@@ -13,6 +14,11 @@ import {
   IconButton,
   Image,
   Link,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -21,15 +27,62 @@ import {
   useBreakpointValue,
   useColorModeValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/authContext";
+import axios from "axios";
+import { BASE_URL } from "../utils/vars";
 
 const Navbar = () => {
+  const { auth, setAuth } = useContext(AuthContext);
+
   const { isOpen, onToggle } = useDisclosure();
 
+  const toast = useToast();
+
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    axios
+      .post(`${BASE_URL}/users/logout`, {}, { withCredentials: true })
+      .then((response) => response.data)
+      .then((responseData) => {
+        console.log(responseData);
+
+        toast({
+          title: "Logout Successful",
+          description: "We've have been logged out.",
+          status: "success",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+
+        setAuth({
+          isAuth: false,
+          userId: "",
+          email: "",
+          accessToken: "",
+        });
+
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast({
+          title: error.response.data?.message,
+          // description: "We've created your account for you.",
+          status: "error",
+          duration: 5000,
+          position: "top-right",
+          isClosable: true,
+        });
+      });
+  };
 
   return (
     <Box>
@@ -80,38 +133,66 @@ const Navbar = () => {
           </Flex>
         </Flex>
 
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify={"flex-end"}
-          direction={"row"}
-          spacing={6}
-        >
-          <Button
-            fontSize={"sm"}
-            fontWeight={400}
-            variant={"link"}
-            onClick={() => {
-              navigate("/login");
-            }}
+        {!auth.isAuth && (
+          <Stack
+            flex={{ base: 1, md: 0 }}
+            justify={"flex-end"}
+            direction={"row"}
+            spacing={6}
           >
-            Sign In
-          </Button>
-          <Button
-            display={{ base: "none", md: "inline-flex" }}
-            fontSize={"sm"}
-            fontWeight={600}
-            color={"white"}
-            bg={"red.400"}
-            onClick={() => {
-              navigate("/signup");
-            }}
-            _hover={{
-              bg: "red.500",
-            }}
-          >
-            Sign Up
-          </Button>
-        </Stack>
+            <Button
+              fontSize={"sm"}
+              fontWeight={400}
+              variant={"link"}
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Sign In
+            </Button>
+            <Button
+              display={{ base: "none", md: "inline-flex" }}
+              fontSize={"sm"}
+              fontWeight={600}
+              color={"white"}
+              bg={"red.400"}
+              onClick={() => {
+                navigate("/signup");
+              }}
+              _hover={{
+                bg: "red.500",
+              }}
+            >
+              Sign Up
+            </Button>
+          </Stack>
+        )}
+
+        {auth.isAuth && (
+          <Flex alignItems={"center"}>
+            <Menu>
+              <MenuButton
+                as={Button}
+                rounded={"full"}
+                variant={"link"}
+                cursor={"pointer"}
+                minW={0}
+              >
+                <Avatar
+                  size={"sm"}
+                  src={
+                    "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                  }
+                />
+              </MenuButton>
+              <MenuList>
+                <MenuItem>{auth.email}</MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+          </Flex>
+        )}
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>

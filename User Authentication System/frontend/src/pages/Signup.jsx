@@ -73,9 +73,15 @@ const Signup = () => {
     };
 
     axios
-      .post(`${BASE_URL}/users/register`, userDetails)
-      .then((response) => {
-        // console.log(response.data);
+      .post(`${BASE_URL}/users/register`, userDetails, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // Include cookies in the request
+      })
+      .then((response) => response.data)
+      .then((responseData) => {
+        console.log(responseData);
 
         setFormStateData({
           ...formStateData,

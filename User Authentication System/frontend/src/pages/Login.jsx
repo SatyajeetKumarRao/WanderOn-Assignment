@@ -15,9 +15,10 @@ import {
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { BASE_URL } from "../utils/vars";
+import { AuthContext } from "../contexts/authContext";
 
 const avatars = [
   {
@@ -49,6 +50,8 @@ const initialFormData = {
 };
 
 const Login = () => {
+  const { setAuth } = useContext(AuthContext);
+
   const [formStateData, setFormStateData] = useState(initialFormData);
 
   const toast = useToast();
@@ -67,9 +70,15 @@ const Login = () => {
     setFormStateData({ ...formStateData, isLoading: true, isError: false });
 
     axios
-      .post(`${BASE_URL}/users/login`, data)
-      .then((response) => {
-        console.log(response.data);
+      .post(`${BASE_URL}/users/login`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true, // Include cookies in the request
+      })
+      .then((response) => response.data)
+      .then((responseData) => {
+        console.log(responseData);
 
         setFormStateData({
           ...formStateData,
@@ -87,6 +96,12 @@ const Login = () => {
           isClosable: true,
         });
 
+        setAuth({
+          isAuth: true,
+          userId: responseData.data.userid,
+          email: responseData.data.email,
+          accessToken: responseData.accessToken,
+        });
         navigate("/");
       })
       .catch((error) => {
