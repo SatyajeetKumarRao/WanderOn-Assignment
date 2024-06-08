@@ -69,7 +69,7 @@ const Login = () => {
     axios
       .post(`${BASE_URL}/users/login`, data)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
 
         setFormStateData({
           ...formStateData,
