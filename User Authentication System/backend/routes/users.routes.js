@@ -46,6 +46,7 @@ usersRouter.post("/login", validateLogin, async (req, res) => {
         jwt.sign(
           {
             userId: user._id,
+            email: user.email,
             // sessionId,
           },
           process.env.ACCESS_TOKEN_SECRET,
@@ -54,19 +55,18 @@ usersRouter.post("/login", validateLogin, async (req, res) => {
             if (err) {
               throw new Error(err);
             }
-
             return res
               .status(200)
               .cookie("accessToken", accessToken, {
                 httpOnly: true,
                 expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "none",
+                sameSite:
+                  process.env.NODE_ENV === "production" ? "none" : "lax",
               })
               .json({
-                accessToken,
                 data: {
-                  userid: user._id,
+                  userId: user._id,
                   email: user.email,
                 },
                 message: "User logged in successfully",
@@ -113,7 +113,7 @@ usersRouter.post("/register", validateRegister, async (req, res) => {
 
       return res.status(201).json({
         data: {
-          userid: user._id,
+          userId: user._id,
           email: user.email,
         },
         message: "User registered successfully",
@@ -123,6 +123,29 @@ usersRouter.post("/register", validateRegister, async (req, res) => {
     console.log(error.message);
     return res.status(500).json({ error: true, message: error.message });
   }
+});
+
+// usersRouter.js or similar file
+usersRouter.get("/check-auth", (req, res) => {
+  const accessToken = req.cookies.accessToken;
+
+  if (!accessToken) {
+    return res.status(401).json({ error: true, message: "Not Authorized" });
+  }
+
+  jwt.verify(
+    accessToken,
+    process.env.ACCESS_TOKEN_SECRET,
+    (err, decodedData) => {
+      if (err) {
+        return res.status(401).json({ error: true, message: "Not Authorized" });
+      }
+
+      return res
+        .status(200)
+        .json({ userId: decodedData.userId, email: decodedData.email });
+    }
+  );
 });
 
 usersRouter.post("/logout", async (req, res) => {

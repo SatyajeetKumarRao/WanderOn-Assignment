@@ -69,10 +69,10 @@ const Navbar = () => {
           accessToken: "",
         });
 
-        navigate("/login");
+        navigate("/");
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
         toast({
           title: error.response.data?.message,
           // description: "We've created your account for you.",
