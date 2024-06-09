@@ -30,7 +30,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.webp";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/authContext";
@@ -169,7 +169,13 @@ const Navbar = () => {
         )}
 
         {auth.isAuth && (
-          <Flex alignItems={"center"}>
+          <Flex
+            alignItems={"center"}
+            flex={{ base: 1, md: 0 }}
+            justify={"flex-end"}
+            direction={"row"}
+            spacing={6}
+          >
             <Menu>
               <MenuButton
                 as={Button}
@@ -203,7 +209,6 @@ const Navbar = () => {
 };
 
 const DesktopNav = () => {
-  const linkColor = useColorModeValue("gray.600", "gray.200");
   const linkHoverColor = useColorModeValue("gray.800", "white");
   const popoverContentBgColor = useColorModeValue("white", "gray.800");
 
@@ -213,19 +218,25 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
-              <Link
-                p={2}
-                href={navItem.href ?? "#"}
-                fontSize={"sm"}
-                fontWeight={500}
-                color={linkColor}
-                _hover={{
+              <NavLink
+                to={navItem.href}
+                style={({ isActive }) => ({
+                  padding: "8px",
+                  fontSize: "small",
+                  fontWeight: 500,
+                  color: isActive ? "#F56565" : "#4A5568",
                   textDecoration: "none",
-                  color: linkHoverColor,
-                }}
+                })}
               >
-                {navItem.label}
-              </Link>
+                <Box
+                  _hover={{
+                    textDecoration: "none",
+                    color: linkHoverColor,
+                  }}
+                >
+                  {navItem.label}
+                </Box>
+              </NavLink>
             </PopoverTrigger>
 
             {navItem.children && (
@@ -309,20 +320,23 @@ const MobileNavItem = ({ label, children, href }) => {
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
         py={2}
-        as={Link}
-        href={href ?? "#"}
         justify={"space-between"}
         align={"center"}
         _hover={{
           textDecoration: "none",
         }}
       >
-        <Text
-          fontWeight={600}
-          color={useColorModeValue("gray.600", "gray.200")}
+        <NavLink
+          to={href}
+          style={({ isActive }) => ({
+            fontWeight: 600,
+            color: isActive ? "#F56565" : "#4A5568",
+            textDecoration: "none",
+          })}
+          className={({ isActive }) => (isActive ? "active-link" : "")}
         >
           {label}
-        </Text>
+        </NavLink>
         {children && (
           <Icon
             as={ChevronDownIcon}
@@ -357,42 +371,36 @@ const MobileNavItem = ({ label, children, href }) => {
 
 const NAV_ITEMS = [
   {
-    label: "Inspiration",
-    children: [
-      {
-        label: "Explore Design Work",
-        subLabel: "Trending Design to inspire you",
-        href: "#",
-      },
-      {
-        label: "New & Noteworthy",
-        subLabel: "Up-and-coming Designers",
-        href: "#",
-      },
-    ],
+    label: "Home",
+    href: "/",
   },
   {
-    label: "Find Work",
-    children: [
-      {
-        label: "Job Board",
-        subLabel: "Find your dream design job",
-        href: "#",
-      },
-      {
-        label: "Freelance Projects",
-        subLabel: "An exclusive list for contract work",
-        href: "#",
-      },
-    ],
+    label: "Explore India",
+    href: "/explore-india",
   },
   {
-    label: "Learn Design",
-    href: "#",
+    label: "International Packages",
+    href: "/international-packages",
+    // children: [
+    //   {
+    //     label: "Job Board",
+    //     subLabel: "Find your dream design job",
+    //     href: "#",
+    //   },
+    //   {
+    //     label: "Freelance Projects",
+    //     subLabel: "An exclusive list for contract work",
+    //     href: "#",
+    //   },
+    // ],
   },
   {
-    label: "Hire Designers",
-    href: "#",
+    label: "Weekend Trips",
+    href: "/weekend-trips",
+  },
+  {
+    label: "Group Tours",
+    href: "/group-tours",
   },
 ];
 

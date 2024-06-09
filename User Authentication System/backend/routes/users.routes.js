@@ -140,7 +140,6 @@ usersRouter.get("/check-auth", (req, res) => {
       if (err) {
         return res.status(401).json({ error: true, message: "Not Authorized" });
       }
-
       return res
         .status(200)
         .json({ userId: decodedData.userId, email: decodedData.email });
