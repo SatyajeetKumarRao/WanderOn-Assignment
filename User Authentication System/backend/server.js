@@ -4,6 +4,7 @@ const cors = require("cors");
 const { usersRouter } = require("./routes/users.routes");
 const { connectDB } = require("./utils/db.config");
 const cookieParser = require("cookie-parser");
+const { tripsRouter } = require("./routes/trips.routes");
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", usersRouter);
+
+app.use("/trips", tripsRouter);
 
 app.all("*", (req, res) => {
   res.json({ error: true, message: "404 Invalid Route" });
