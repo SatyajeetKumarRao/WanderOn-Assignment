@@ -12,13 +12,21 @@ export const AuthContextProvider = ({ children }) => {
   });
 
   useEffect(() => {
+    const accessToken = sessionStorage.getItem("accessToken");
+    const userData = sessionStorage.getItem("userData");
+
     const checkAuthStatus = async () => {
       axios
         .get(`${BASE_URL}/users/check-auth`, {
           withCredentials: true, // Include cookies in the request
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
         })
         .then((response) => response.data)
         .then((responseData) => {
+          console.log("Login success");
           setAuth({
             isAuth: true,
             userId: responseData.userId,
@@ -31,7 +39,7 @@ export const AuthContextProvider = ({ children }) => {
         });
     };
 
-    checkAuthStatus();
+    if (accessToken && userData) checkAuthStatus();
   }, []);
 
   return (

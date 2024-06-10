@@ -3,14 +3,8 @@ const express = require("express");
 const { Users } = require("../models/users.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 
-const {
-  validateRegister,
-  validateLogin,
-} = require("../middleware/users.middleware");
 const { BlacklistToken } = require("../models/blacklistToken.model");
-const { Session } = require("../models/session.model");
 
 const saltRounds = 10;
 
@@ -32,20 +26,10 @@ const login = async (req, res) => {
       }
 
       if (result) {
-        // const sessionId = crypto.randomBytes(32).toString("hex");
-
-        // const session = new Session({
-        //   userId: user._id,
-        //   sessionId,
-        // });
-
-        // await session.save();
-
         jwt.sign(
           {
             userId: user._id,
             email: user.email,
-            // sessionId,
           },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "1d" },
@@ -53,6 +37,7 @@ const login = async (req, res) => {
             if (err) {
               throw new Error(err);
             }
+            req.session.userId = user._id;
             return res
               .status(200)
               .cookie("accessToken", accessToken, {
@@ -63,6 +48,7 @@ const login = async (req, res) => {
                   process.env.NODE_ENV === "production" ? "none" : "lax",
               })
               .json({
+                accessToken,
                 data: {
                   userId: user._id,
                   email: user.email,
@@ -124,7 +110,8 @@ const register = async (req, res) => {
 };
 
 const checkAuth = (req, res) => {
-  const accessToken = req.cookies.accessToken;
+  const accessToken =
+    req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
 
   if (!accessToken) {
     return res.status(401).json({ error: true, message: "Not Authorized" });
@@ -146,8 +133,10 @@ const checkAuth = (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    if (req.cookies.accessToken) {
-      const accessToken = req.cookies.accessToken;
+    const accessToken =
+      req.cookies.accessToken || req.headers.authorization?.split(" ")[1];
+    if (accessToken) {
+      req.session.destroy();
 
       const blacklistToken = new BlacklistToken({ token: accessToken });
 
@@ -163,7 +152,7 @@ const logout = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    return res.status(400).json({ error: true, message: error.message });
+    return res.status(500).json({ error: true, message: error.message });
   }
 };
 module.exports = { login, register, checkAuth, logout };

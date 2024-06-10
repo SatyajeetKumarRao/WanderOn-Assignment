@@ -47,8 +47,20 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    const accessToken = sessionStorage.getItem("accessToken");
+
     axios
-      .post(`${BASE_URL}/users/logout`, {}, { withCredentials: true })
+      .post(
+        `${BASE_URL}/users/logout`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
       .then((response) => response.data)
       .then((responseData) => {
         console.log(responseData);
@@ -68,6 +80,9 @@ const Navbar = () => {
           email: "",
           accessToken: "",
         });
+
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("userData");
 
         navigate("/");
       })

@@ -5,11 +5,14 @@ import { AuthContext } from "../contexts/authContext";
 const PrivateRoute = ({ children }) => {
   const { auth } = useContext(AuthContext);
 
-  if (!auth.isAuth) {
-    return <Navigate to="/login" />;
+  const accessToken = sessionStorage.getItem("accessToken");
+  const userData = sessionStorage.getItem("userData");
+
+  if (auth.isAuth || (accessToken && userData)) {
+    return children;
   }
 
-  return children;
+  return <Navigate to="/login" />;
 };
 
 export { PrivateRoute };

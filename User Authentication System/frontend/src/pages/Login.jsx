@@ -102,6 +102,10 @@ const Login = () => {
           email: responseData.data.email,
           accessToken: responseData.accessToken,
         });
+
+        sessionStorage.setItem("accessToken", responseData.accessToken);
+        sessionStorage.setItem("userData", JSON.stringify(responseData.data));
+
         navigate("/");
       })
       .catch((error) => {
